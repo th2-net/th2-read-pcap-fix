@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    api platform('com.exactpro.th2:bom:3.0.0')
+    api platform('com.exactpro.th2:bom:4.1.0')
 
     implementation 'io.netty:netty-buffer:4.1.70.Final'
     implementation group: 'com.github.os72', name: 'protoc-jar-maven-plugin', version: '3.11.4'
