@@ -1,5 +1,5 @@
 variables:
-  APP_NAME: pcap-reader
+  APP_NAME: read-pcap-fix
 
 include:
   - project: vivarium/th2/pipelines
