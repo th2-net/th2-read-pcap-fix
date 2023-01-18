@@ -1,0 +1,97 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'application'
+    id 'com.palantir.docker' version '0.26.0' apply false
+}
+apply plugin: 'com.palantir.docker'
+
+group 'com.exactprosystems.fix.reader'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenCentral()
+    maven {
+        name 'Sonatype_snapshots'
+        url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+    }
+    maven {
+        name 'Sonatype_releases'
+        url 'https://s01.oss.sonatype.org/content/repositories/releases/'
+    }
+}
+
+dependencies {
+    api platform('com.exactpro.th2:bom:3.0.0')
+
+    implementation 'io.netty:netty-buffer:4.1.70.Final'
+    implementation group: 'com.github.os72', name: 'protoc-jar-maven-plugin', version: '3.11.4'
+    implementation 'com.exactpro.mina:apache-mina-core:2.0.9.1'
+    implementation 'com.exactpro.sf:sailfish-common:3.2.1881'
+    implementation 'org.tukaani:xz:1.8'
+    implementation 'io.prometheus:simpleclient:0.9.0'
+
+    implementation 'org.apache.commons:commons-compress:1.21'
+
+    implementation 'com.exactpro.th2:common:3.36.0'
+    implementation 'com.exactpro.th2:store-common:3.2.0'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.13.0'
+
+    implementation group: 'io.grpc', name: 'grpc-protobuf', version: '1.19.0'
+    
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.1.0'
+    // https://mvnrepository.com/artifact/org.cassandraunit/cassandra-unit
+    testImplementation group: 'org.cassandraunit', name: 'cassandra-unit', version: '4.3.1.0'
+
+
+}
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    zip64=true
+    manifest {
+        attributes(
+                'Created-By': "${System.getProperty('java.version')} (${System.getProperty('java.vendor')})",
+                'Specification-Title': '',
+                'Specification-Vendor': 'Exactpro Systems LLC',
+                'Implementation-Title': project.archivesBaseName,
+                'Implementation-Vendor': 'Exactpro Systems LLC',
+                'Implementation-Vendor-Id': 'com.exactpro',
+                'Implementation-Version': project.version
+        )
+    }
+}
+
+application {
+    mainClassName 'com.exactprosystems.fix.reader.pcapreader.starter.PcapReaderMain'
+}
+
+applicationName = 'service'
+
+distTar {
+    archiveName "${applicationName}.tar"
+}
+
+dockerPrepare {
+    dependsOn distTar
+}
+
+docker {
+    copySpec.from(tarTree("$buildDir/distributions/${applicationName}.tar"))
+}
+
+
+test {
+    useJUnitPlatform()
+}
