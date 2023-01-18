@@ -36,7 +36,7 @@ dependencies {
 
     implementation 'org.apache.commons:commons-compress:1.21'
 
-    implementation 'com.exactpro.th2:common:3.36.0'
+    implementation 'com.exactpro.th2:common:3.44.0'
     implementation 'com.exactpro.th2:store-common:3.2.0'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
