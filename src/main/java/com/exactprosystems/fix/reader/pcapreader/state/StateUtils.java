@@ -22,6 +22,8 @@ import com.exactprosystems.fix.reader.pcapreader.tcpstream.TcpStreamFactory;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
 import io.netty.buffer.ByteBuf;
+
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +94,26 @@ public class StateUtils implements Runnable {
         return state;
     }
 
+    /**
+     * Generates state and schedules it to be stored in the file
+     */
     public void saveState(TcpStreamFactory tcpStreamFactory, String lastReadFile, long offset) {
+        State state = collectState(tcpStreamFactory, lastReadFile, offset);
+        saveState(state);
+    }
+
+    /**
+     * Schedules state to be stored in the file
+     */
+    public void saveState(State state) {
+        stateObject.set(state);
+    }
+
+    /**
+     * Generates state using {@link TcpStreamFactory}
+     */
+    @NotNull
+    public static State collectState(TcpStreamFactory tcpStreamFactory, String lastReadFile, long offset) {
         List<TcpStreamState> tcpStreamStates = new ArrayList<>();
         tcpStreamFactory.getStreams().stream()
                 .map(TcpStream::getState)
@@ -102,8 +123,7 @@ public class StateUtils implements Runnable {
                 .filter(AbstractMstoreSaver.class::isInstance)
                 .map(key -> ((AbstractMstoreSaver) key).getState())
                 .forEach(saverStates::add);
-        State state = new State(lastReadFile, offset, tcpStreamStates, saverStates, tcpStreamFactory.getStreamNameConnectionAddressesMap());
-        stateObject.set(state);
+        return new State(lastReadFile, offset, tcpStreamStates, saverStates, tcpStreamFactory.getStreamNameConnectionAddressesMap());
     }
 
     @Override

@@ -215,7 +215,7 @@ public class PcapReaderRunnable implements Runnable {
                 String lastReadFileFromState = state == null ? null : state.getLastReadFile();
                 Long offsetFromState = state == null ? null : state.getOffset();
                 boolean stateNotExists = state == null;
-                state = null;
+                state = null; // TODO: the state is reset here. Why is it happens?
                 if(stateNotExists && firstIteration){
                     for (String name: tcpStreamFactory.getStreamNames()
                     ) {
@@ -224,8 +224,8 @@ public class PcapReaderRunnable implements Runnable {
                             throw new Exception("there are already messages in the cradle for session alias: " + name);
                         }
                     }
-                    firstIteration = false;
                 }
+                firstIteration = false;
                 for (PcapFileEntry pcapFileEntry : files) {
                     if (!alive) {
                         stateUtils.setAlive(false);
@@ -298,13 +298,14 @@ public class PcapReaderRunnable implements Runnable {
                     }
 
                     tcpStreamFactory.closeDeadConnections();
+                    state = StateUtils.collectState(tcpStreamFactory, fileName, result.getPacketsRead());
                     if (pcapFileReaderConfiguration.isWriteState()) {
                         if (!stateUtilsThread.isAlive()) {
                             stateUtilsThread = new Thread(stateUtils);
                             log.error("State Utils thread was interrupted. Restarting thread");
                             stateUtilsThread.start();
                         }
-                        stateUtils.saveState(tcpStreamFactory, fileName, result.getPacketsRead());
+                        stateUtils.saveState(state);
                     }
                     tcpStreamFactory.resetSavedInfo();
                     lastReadFile = fileName;
