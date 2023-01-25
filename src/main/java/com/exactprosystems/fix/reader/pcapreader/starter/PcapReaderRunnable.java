@@ -298,14 +298,13 @@ public class PcapReaderRunnable implements Runnable {
                     }
 
                     tcpStreamFactory.closeDeadConnections();
-                    state = StateUtils.collectState(tcpStreamFactory, fileName, result.getPacketsRead());
                     if (pcapFileReaderConfiguration.isWriteState()) {
                         if (!stateUtilsThread.isAlive()) {
                             stateUtilsThread = new Thread(stateUtils);
                             log.error("State Utils thread was interrupted. Restarting thread");
                             stateUtilsThread.start();
                         }
-                        stateUtils.saveState(state);
+                        stateUtils.saveState(tcpStreamFactory, fileName, result.getPacketsRead());
                     }
                     tcpStreamFactory.resetSavedInfo();
                     lastReadFile = fileName;
