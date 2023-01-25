@@ -21,6 +21,8 @@ import com.exactprosystems.fix.reader.pcapreader.tcpstream.TcpStream;
 import com.exactprosystems.fix.reader.pcapreader.tcpstream.TcpStreamFactory;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.cbor.databind.CBORMapper;
+import com.google.common.collect.Maps;
+
 import io.netty.buffer.ByteBuf;
 
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +72,8 @@ public class StateUtils implements Runnable {
             Map<String, List<ConnectionAddressState>> streamNameConnectionAddressesMap = state.getStreamNameConnectionAddressesMap();
             if (streamNameConnectionAddressesMap != null && !streamNameConnectionAddressesMap.isEmpty()) {
                 if (!Objects.deepEquals(streamNameConnectionAddressesMap, tcpStreamFactory.getStreamNameConnectionAddressesMap())) {
-                    throw new IllegalStateException("Connection addresses from state and connection addresses from configuration are not equal");
+                    logger.warn("Connection addresses from state and connection addresses from configuration are not equal: {}",
+                            Maps.difference(streamNameConnectionAddressesMap, tcpStreamFactory.getStreamNameConnectionAddressesMap()).entriesDiffering());
                 }
             }
             State finalState = state;
