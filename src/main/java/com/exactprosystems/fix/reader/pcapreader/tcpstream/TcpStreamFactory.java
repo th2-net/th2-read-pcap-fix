@@ -29,6 +29,7 @@ import com.exactprosystems.fix.reader.cradle.CradleFixSaver;
 import com.exactprosystems.fix.reader.cradle.MstoreFixSaver;
 import com.exactprosystems.fix.reader.cradle.Saver;
 import com.exactprosystems.fix.reader.eventsender.EventPublisher;
+import com.exactprosystems.fix.reader.pcapreader.IpMask;
 import com.exactprosystems.fix.reader.pcapreader.ParsingUtils;
 import com.exactprosystems.fix.reader.pcapreader.constants.ProtocolType;
 import com.exactprosystems.fix.reader.pcapreader.handlers.FixTcpPacketHandler;
@@ -39,6 +40,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.Map.Entry;
+
+import javax.annotation.Nullable;
 
 public class TcpStreamFactory {
     private static final Logger logger = LoggerFactory.getLogger(TcpStreamFactory.class);
@@ -53,8 +57,8 @@ public class TcpStreamFactory {
 
     private Set<ProtocolType> protocols;
 
-    private Map<Pair<Integer, Integer>, TcpStream> tcpStreams = new HashMap<>();
-    private Map<Pair<Integer, Integer>, String> streamNames = new HashMap<>();
+    private Map<Pair<IpMask, Integer>, TcpStream> tcpStreams = new HashMap<>();
+    private Map<Pair<IpMask, Integer>, String> streamNames = new HashMap<>();
 
     private Map<String, List<ConnectionAddressState>> streamNameConnectionAddressesMap = new HashMap<>();
 
@@ -98,8 +102,8 @@ public class TcpStreamFactory {
                 ProtocolType protocolType = ProtocolType.valueOf(connectionAddress.getProtocol());
                 String streamName = connectionAddress.getStreamName();
 
-                int rawIp = ParsingUtils.ipToInt(IP);
-                Pair<Integer, Integer> pair = Pair.of(rawIp, port);
+                IpMask ipMask = IpMask.createFromString(IP);
+                Pair<IpMask, Integer> pair = Pair.of(ipMask, port);
                 if (StringUtils.isNotBlank(streamName)) {
                     streamNames.put(pair, streamName);
                     streamNameConnectionAddressesMap.computeIfAbsent(streamName, ign -> new ArrayList<>())
@@ -163,7 +167,7 @@ public class TcpStreamFactory {
         return getStreamForAddress(sourceIP, sourcePort, destinationIP, destinationPort, tcpStreams);
     }
 
-    private TcpStream getStreamForAddress(int sourceIP, int sourcePort, int destinationIP, int destinationPort, Map<Pair<Integer, Integer>, TcpStream> streams) {
+    private TcpStream getStreamForAddress(int sourceIP, int sourcePort, int destinationIP, int destinationPort, Map<Pair<IpMask, Integer>, TcpStream> streams) {
         Pair<Integer, Integer> sourcePair = Pair.of(sourceIP, sourcePort);
         Pair<Integer, Integer> destPair = Pair.of(destinationIP, destinationPort);
 
@@ -174,14 +178,12 @@ public class TcpStreamFactory {
             return null;
         }
 
-        if (streams.containsKey(sourcePair)) {
-            TcpStream tcpStream = streams.get(sourcePair);
-            protocols.add(tcpStream.getProtocolType());
-            return tcpStream;
+        TcpStream tcpStream = findMatch(sourcePair, streams);
+        if (tcpStream == null) {
+            tcpStream = findMatch(destPair, streams);
         }
 
-        if (streams.containsKey(destPair)) {
-            TcpStream tcpStream = streams.get(destPair);
+        if (tcpStream != null) {
             protocols.add(tcpStream.getProtocolType());
             return tcpStream;
         }
@@ -207,15 +209,15 @@ public class TcpStreamFactory {
     }
 
     public String getStreamName(int IP, int port) {
-        return streamNames.get(Pair.of(IP, port));
+        return findMatch(Pair.of(IP, port), streamNames);
     }
-    
+
     public Collection<String> getStreamNames(){
         return streamNames.values();
     }
 
     public boolean isClientStream(int sourceIP, int sourcePort) {
-        return !tcpStreams.containsKey(Pair.of(sourceIP, sourcePort));
+        return findMatch(Pair.of(sourceIP, sourcePort), tcpStreams) == null;
     }
 
     public void flushAllStreams() {
@@ -268,5 +270,20 @@ public class TcpStreamFactory {
 
     public void setStreamNameConnectionAddressesMap(Map<String, List<ConnectionAddressState>> streamNameConnectionAddressesMap) {
         this.streamNameConnectionAddressesMap = streamNameConnectionAddressesMap;
+    }
+
+    @Nullable
+    private static <T> T findMatch(Pair<Integer, Integer> sourcePair, Map<Pair<IpMask, Integer>, T> map) {
+        int ip = sourcePair.getLeft();
+        int port = sourcePair.getRight();
+        for (Entry<Pair<IpMask, Integer>, T> entry : map.entrySet()) {
+            var maskAndPortPair = entry.getKey();
+            IpMask mask = maskAndPortPair.getLeft();
+            int actualPort = maskAndPortPair.getRight();
+            if (mask.matches(ip) && port == actualPort) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 }
