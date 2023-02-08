@@ -77,7 +77,7 @@ public abstract class AbstractMstoreSaver extends Saver {
         this.mapper = new ObjectMapper();
 
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(configuration.getMessageBatcherCorePoolSize());
-        firstBatcher = new MessageBatcher((long) (tcpStreamFactory.getMaxBatchSize()),
+        firstBatcher = new MessageBatcher(tcpStreamFactory.getMaxBatchSize(),
                 configuration.getMessageBatcherMaxFlushTime(),
                 configuration.isCheckMessageBatchSequenceGrowth(),
                 configuration.isCheckMessageBatchTimestampGrowth(),
@@ -109,7 +109,7 @@ public abstract class AbstractMstoreSaver extends Saver {
                     }
                 });
 
-        secondBatcher = new MessageBatcher((long) (tcpStreamFactory.getMaxBatchSize()),
+        secondBatcher = new MessageBatcher(tcpStreamFactory.getMaxBatchSize(),
                 configuration.getMessageBatcherMaxFlushTime(),
                 configuration.isCheckMessageBatchSequenceGrowth(),
                 configuration.isCheckMessageBatchTimestampGrowth(),

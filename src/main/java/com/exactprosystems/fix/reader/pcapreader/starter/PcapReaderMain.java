@@ -31,13 +31,13 @@ import java.util.List;
 public class PcapReaderMain {
     private static final Logger log = LoggerFactory.getLogger(PcapReaderMain.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         CommonFactory factory = CommonFactory.createFromArguments(args);
         PcapFileReaderConfiguration configuration = factory.getCustomConfiguration(PcapFileReaderConfiguration.class);
 
         try {
             CradleStorage storage = factory.getCradleManager().getStorage();
-            long maxBatchSize = (long) (storage.getObjectsFactory().createMessageBatch().getSpaceLeft()* configuration.getUsableFractionOfBatchSize());
+            long maxBatchSize = (long) (storage.getObjectsFactory().createMessageBatch().getSpaceLeft() * configuration.getUsableFractionOfBatchSize());
             MessageRouter<RawMessageBatch> messageRouter = null;
             MessageRouter<EventBatch> eventRouter = null;
 

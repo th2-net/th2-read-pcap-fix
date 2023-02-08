@@ -11,84 +11,96 @@ States, which are stored after a certain interval, are used for that.
 
 All values after `:` are default values.
 
-**use_mstore: _false_** — the flag that is responsible for saving messages to [mstore](https://github.com/th2-net/th2-mstore) instead of a database.
+**use_mstore: _false_** — the flag that is responsible for saving messages to 
+[mstore](https://github.com/th2-net/th2-mstore) instead of a database
 
-**checkpoint_interval: _10000_** — the number of packets after which the state will be saved.
+**checkpoint_interval: _10000_** — the number of packets after which the state will be saved
 
-**dead_connections_scan_interval: _100000_** — this parameter specifies the time after which the scanning of dead connections is run.
+**dead_connections_scan_interval: _100000_** — this parameter specifies the time after which the scanning of dead 
+connections is run
 
-**parse_fix: _false_** — to be removed?
+**connection_death_interval: _10800000_** — this parameter specifies the time after which the connection 
+is considered dead
 
-**fix_connection_death_interval: _10800000_** — this parameter specifies the time after which the connection is considered dead.
+**read_state: _true_** — this parameter specifies if the component reads its state when (re)staring in order to 
+resume the processing
 
-**read_state: _true_** — this parameter specifies if the component reads its state when (re)staring in order to resume the processing.
+**write_state: _true_** — this parameter specifies if the component write its state which is used 
+to resume the processing
 
-**write_state: _true_** — this parameter specifies if the component write its state which is used to resume the processing.
+**use_timestamp_from_pcap: _true_** — this parameter specifies if timestamps of the raw messages will be set 
+as they are in PCAPs (true) or as the current time on the server (false)
 
-**use_timestamp_from_pcap: _true_** — this parameter specifies if timestamps of the raw messages will be set as they are in pcaps (true)
-or as the current time on the server (false).
+**sleep_interval: _60_** — number of seconds(?) that the component will wait after finishing processing of all 
+available packets in PCAPs before
+checking if there's more to be processed
 
-**sleep_interval: _60_** — number of seconds(?) that the component will wait after finishing processing of all available packets in pcaps before
-checking if there's more to be processed.
+**number_of_packets_to_successful_restore: _10_** — the number of packets needed to successfully restore a gap 
+in a stream message stream
 
-**number_of_packets_to_successful_restore_fix: _10_** —
+**use_event_publish: _true** — this parameter specifies if the component will publish any events
 
-**use_event_publish: _true** — this parameter specifies if the component will publish any events.
+**disable_cradle_saving: _false_** — this parameter specifies if the component will store the messages to 
+[cradle](https://github.com/th2-net/cradleapi)
 
-**disable_cradle_saving: _false_** — this parameter specifies if the component will store the messages to [cradle](https://github.com/th2-net/cradleapi).
+**disable_connectivity_saving: _false_** — this parameter specifies if the connection event will be stored
 
-**disable_connectivity_saving: _false_** —
+**event_batch_size: _1048576_** — this parameter specifies the size of an event batch (1MB by default)
 
-**event_batch_size: _1048576_** — this parameter specifies the size of an event batch (1MB by default).
+**event_batcher_core_pool_size: _2_** —  this parameter specifies the number of events necessary for sending another 
+event batch
 
-**event_batcher_core_pool_size: _2_** — 
+**event_batcher_max_flush_time: _1000_** — the number of milliseconds for scheduling the sending of event batches
 
-**event_batcher_max_flush_time: _1000_** — 
-
-**use_offset_from_cradle: _true_** — 
+**use_offset_from_cradle: _true_** — this parameter is used for synchronization of PCAP packet sequences with
+packet sequences from Cradle
 
 **individual_read_configurations** — this parameter will be covered in the next section
 
-**required_application_properties_mode: _"OFF"_** — 
+**message_batcher_core_pool_size: _2_** — this parameter specifies the number of events necessary for sending another
+message batch
 
-**message_batch_size: _1048576_** — this parameter specifies the size of a message batch (1MB by default).
+**message_batcher_max_flush_time: _1000_** — the number of milliseconds for scheduling the sending of message batches
 
-**message_batcher_core_pool_size: _2_** — 
+**buffered_reader_chunk_size: _8192_** — the buffer size for BufferedInputStream
 
-**message_batcher_max_flush_time: _1000_** — 
+**check_message_batch_sequence_growth: _false_** — this parameter specifies if the component checks whether 
+sequence numbers are incremental in message batches
 
-**buffered_reader_chunk_size: _8192_** — 
+**check_message_batch_timestamp_growth: _false_** — this parameter specifies if the component checks whether
+timestamps are incremental in message batches 
 
-**check_message_batch_sequence_growth: _false_** — 
+**tcpdump_snapshot_length: _262144_** — this parameter specifies the maximum packet length
 
-**check_message_batch_timestamp_growth: _false_** — 
+**sort_th2_messages: _false_** — this parameter specifies if messages should be sorted by timestamps
 
-**tcpdump_snapshot_length: _262144_** — 
+**usable_fraction_of_batch_size: _0.9_** — the fraction of batch size to be used; can be from 0 to 1
 
-**sort_th2_messages: _false_** — 
+**message_sorter_window_size: _15000_** — the time window size in which a sorting is performed
 
-**usable_fraction_of_batch_size: _1.0_** — 
+**message_sorter_connection_end_timeout: _30000_** — this parameter specifies the amount of time (in milliseconds)
+that is supposed to pass between two adjacent packets so the connection would be considered stale and then deleted
 
-**message_sorter_window_size: _15000_** — 
+**message_sorter_clear_interval: _2000_** — the amount of messages used by MessageSorter to start searching for
+stale sessions (i.e. after sorting the next 2000 messages the search begins)
 
-**message_sorter_connection_end_timeout: _30000_** — 
+**possible_time_window_between_files: _1000_** — this parameter specifies the **maximum** amount of time (in milliseconds)
+that is supposed to pass between two adjacent PCAPs 
+(the last packet timestamp for 1st PCAP and the first packet timestamp from the 2nd PCAP are compared).
 
-**message_sorter_clear_interval: _2000_** — 
-
-**possible_time_window_between_files: _1000_** — 
-
-**check_message_size_exceeds_batch_size: _false_** — 
+**check_message_size_exceeds_batch_size: _false_** — this parameter specifies if a message size exceeding a batch size 
+should be checked of not
 
 
 ## Individual configuration parameters
 
-**pcap_directory** — a directory with pcap files.
+**pcap_directory** — a directory with pcap files
 
-**pcap_file_prefix** — a prefix of the pcap files.
+**pcap_file_prefix** — a prefix of the pcap files
 
-**read_tar_gz_archives** — this parameter specifies if tar.gz archives should be processed.
+**read_tar_gz_archives** — this parameter specifies if tar.gz archives should be processed
 
-**tar_gz_archive_prefix** — a prefix of the tar.gz pcap files.
+**tar_gz_archive_prefix** — a prefix of the tar.gz pcap files
 
 **connection_addresses** — a list of connection addresses; an example of one is in the next section
 
@@ -98,7 +110,7 @@ checking if there's more to be processed.
 
 **ip** — an IP address
 **port** — a port
-**protocol** — to be removed
+**protocol** — a protocol of packets from a pcap
 **stream_name** — the name that is used for message storing
 
 ## Example of infra-schema
