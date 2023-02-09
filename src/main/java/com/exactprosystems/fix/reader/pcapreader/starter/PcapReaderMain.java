@@ -31,66 +31,67 @@ import java.util.List;
 public class PcapReaderMain {
     private static final Logger log = LoggerFactory.getLogger(PcapReaderMain.class);
 
-    public static void main(String[] args) throws Exception {
-        CommonFactory factory = CommonFactory.createFromArguments(args);
-        PcapFileReaderConfiguration configuration = factory.getCustomConfiguration(PcapFileReaderConfiguration.class);
+    public static void main(String[] args) {
+        try(CommonFactory factory = CommonFactory.createFromArguments(args)) {
+            PcapFileReaderConfiguration configuration = factory.getCustomConfiguration(PcapFileReaderConfiguration.class);
 
-        try {
-            CradleStorage storage = factory.getCradleManager().getStorage();
-            long maxBatchSize = (long) (storage.getObjectsFactory().createMessageBatch().getSpaceLeft()* configuration.getUsableFractionOfBatchSize());
-            MessageRouter<RawMessageBatch> messageRouter = null;
-            MessageRouter<EventBatch> eventRouter = null;
+            try {
+                CradleStorage storage = factory.getCradleManager().getStorage();
+                long maxBatchSize = (long) (storage.getObjectsFactory().createMessageBatch().getSpaceLeft() * configuration.getUsableFractionOfBatchSize());
+                MessageRouter<RawMessageBatch> messageRouter = null;
+                MessageRouter<EventBatch> eventRouter = null;
 
-            if (configuration.isUseMstore()) {
-                messageRouter = factory.getMessageRouterRawBatch();
-                eventRouter = factory.getEventBatchRouter();
-            }
+                if (configuration.isUseMstore()) {
+                    messageRouter = factory.getMessageRouterRawBatch();
+                    eventRouter = factory.getEventBatchRouter();
+                }
 
-            if (configuration.isUseEventPublishing()) {
-                eventRouter = factory.getEventBatchRouter();
-            }
+                if (configuration.isUseEventPublishing()) {
+                    eventRouter = factory.getEventBatchRouter();
+                }
 
-            List<PcapReaderRunnable> readers = new ArrayList<>();
+                List<PcapReaderRunnable> readers = new ArrayList<>();
 
-            for (IndividualReaderConfiguration individualReaderConfiguration : configuration.getIndividualReaderConfigurations()) {
-                readers.add(new PcapReaderRunnable(individualReaderConfiguration, configuration, storage, messageRouter, eventRouter, maxBatchSize));
-            }
+                for (IndividualReaderConfiguration individualReaderConfiguration : configuration.getIndividualReaderConfigurations()) {
+                    readers.add(new PcapReaderRunnable(individualReaderConfiguration, configuration, storage, messageRouter, eventRouter, maxBatchSize));
+                }
 
-            List<Thread> threads = new ArrayList<>();
+                List<Thread> threads = new ArrayList<>();
 
-            for (PcapReaderRunnable reader : readers) {
-                Thread thread = new Thread(reader);
-                threads.add(thread);
-                thread.start();
-                log.info("ReaderThread {} started", thread.getName());
-            }
+                for (PcapReaderRunnable reader : readers) {
+                    Thread thread = new Thread(reader);
+                    threads.add(thread);
+                    thread.start();
+                    log.info("ReaderThread {} started", thread.getName());
+                }
 
-            boolean foundDeadThread = false;
-            while (Thread.currentThread().isAlive()) {
-                for (Thread thread : threads) {
-                    if (!thread.isAlive()) {
-                        foundDeadThread = true;
+                boolean foundDeadThread = false;
+                while (Thread.currentThread().isAlive()) {
+                    for (Thread thread : threads) {
+                        if (!thread.isAlive()) {
+                            foundDeadThread = true;
+                            break;
+                        }
+                    }
+                    if (foundDeadThread) {
                         break;
                     }
+                    Thread.sleep(60 * 1000L);
                 }
-                if (foundDeadThread) {
-                    break;
+
+                for (PcapReaderRunnable reader : readers) {
+                    reader.setAlive(false);
                 }
-                Thread.sleep(60 * 1000L);
-            }
 
-            for (PcapReaderRunnable reader : readers) {
-                reader.setAlive(false);
-            }
+                for (Thread thread : threads) {
+                    thread.join();
+                }
 
-            for (Thread thread : threads) {
-                thread.join();
+                System.exit(2);
+            } catch (Exception e) {
+                log.error("Fatal error", e);
+                System.exit(1);
             }
-
-            System.exit(2);
-        } catch (Exception e) {
-            log.error("Fatal error", e);
-            System.exit(1);
         }
     }
 }

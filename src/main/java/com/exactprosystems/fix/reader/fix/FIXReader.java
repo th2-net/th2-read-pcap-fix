@@ -49,9 +49,7 @@ public class FIXReader{
     public FIXReader(Saver saver, PcapFileReaderConfiguration config, String streamName, boolean useStaticStreamName) throws IOException {
         listeners.add(new LoggingFixListener());
         listeners.add((FixListener) saver);
-        if (config.isParseFix()) {
-            listeners.add(FixCsvWriter.getInstance());
-        }
+        listeners.add(FixCsvWriter.getInstance());
         messageAssemblyMap = new HashMap<>();
         configuration = config;
         this.streamName = streamName;

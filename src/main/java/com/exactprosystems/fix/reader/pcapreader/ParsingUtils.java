@@ -16,6 +16,7 @@
 package com.exactprosystems.fix.reader.pcapreader;
 
 import io.netty.buffer.ByteBuf;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +48,18 @@ public final class ParsingUtils {
     };
 
     public static int ipToInt(String ipAddress) {
-        int result = 0;
         String[] ipAddressInArray = ipAddress.split("\\.");
+        int result = ipPartsToInt(ipAddressInArray);
+        ipCache.put(result, ipAddress);
+        return result;
+    }
+
+    public static int ipPartsToInt(String[] ipAddressParts) {
+        int result = 0;
         for (int i = 3; i >= 0; i--) {
-            long ip = Integer.parseInt(ipAddressInArray[3 - i]);
+            long ip = Integer.parseInt(ipAddressParts[3 - i]);
             result |= ip << (i * 8);
         }
-        ipCache.put(result, ipAddress);
         return result;
     }
 
