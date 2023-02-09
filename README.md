@@ -1,26 +1,27 @@
-# read pcap fix (version)
+# read pcap fix (0.0.2)
 
 ## Overview
 
-This component is designed to read FIX packets from pcaps and publish them as raw messages.
+This component is designed to read FIX messages from pcaps and publish them as raw messages.
 
 In case of shutdown, the process can be resumed from the point where it was interrupted.
-States, which are stored after a certain interval, are used for that.
+States, which are stored to a disk after a certain interval, are used for that.
+Note: a PersistentVolume (PV) is required for this component to store the component's states.
 
 ## Configuration parameters
 
 All values after `:` are default values.
 
-**use_mstore: _false_** — the flag that is responsible for saving messages to 
+**use_mstore: _true_** — the flag that is responsible for saving messages to 
 [mstore](https://github.com/th2-net/th2-mstore) instead of a database
 
 **checkpoint_interval: _10000_** — the number of packets after which the state will be saved
 
-**dead_connections_scan_interval: _100000_** — this parameter specifies the time after which the scanning of dead 
-connections is run
+**dead_connections_scan_interval: _100000_** — this parameter specifies the number of processed packets after which the 
+scanning of dead connections is run
 
-**connection_death_interval: _10800000_** — this parameter specifies the time after which the connection 
-is considered dead
+**connection_death_interval: _10800000_** — this parameter specifies the time (in milliseconds) after which
+the connection is considered dead. PCAP time is used here
 
 **read_state: _true_** — this parameter specifies if the component reads its state when (re)staring in order to 
 resume the processing
@@ -31,7 +32,7 @@ to resume the processing
 **use_timestamp_from_pcap: _true_** — this parameter specifies if timestamps of the raw messages will be set 
 as they are in PCAPs (true) or as the current time on the server (false)
 
-**sleep_interval: _60_** — number of seconds(?) that the component will wait after finishing processing of all 
+**sleep_interval: _60_** — number of seconds that the component will wait after finishing processing of all 
 available packets in PCAPs before
 checking if there's more to be processed
 
@@ -47,7 +48,7 @@ in a stream message stream
 
 **event_batch_size: _1048576_** — this parameter specifies the size of an event batch (1MB by default)
 
-**event_batcher_core_pool_size: _2_** —  this parameter specifies the number of events necessary for sending another 
+**event_batcher_core_pool_size: _100_** —  this parameter specifies the number of events necessary for sending another 
 event batch
 
 **event_batcher_max_flush_time: _1000_** — the number of milliseconds for scheduling the sending of event batches
@@ -57,14 +58,14 @@ packet sequences from Cradle
 
 **individual_read_configurations** — this parameter will be covered in the next section
 
-**message_batcher_core_pool_size: _2_** — this parameter specifies the number of events necessary for sending another
+**message_batcher_core_pool_size: _100_** — this parameter specifies the number of events necessary for sending another
 message batch
 
 **message_batcher_max_flush_time: _1000_** — the number of milliseconds for scheduling the sending of message batches
 
-**buffered_reader_chunk_size: _8192_** — the buffer size for BufferedInputStream
+**buffered_reader_chunk_size: _8192_** — the buffer size for BufferedInputStream used for reading PCAP files
 
-**check_message_batch_sequence_growth: _false_** — this parameter specifies if the component checks whether 
+**check_message_batch_sequence_growth: _true_** — this parameter specifies if the component checks whether 
 sequence numbers are incremental in message batches
 
 **check_message_batch_timestamp_growth: _false_** — this parameter specifies if the component checks whether
@@ -88,7 +89,7 @@ stale sessions (i.e. after sorting the next 2000 messages the search begins)
 that is supposed to pass between two adjacent PCAPs 
 (the last packet timestamp for 1st PCAP and the first packet timestamp from the 2nd PCAP are compared).
 
-**check_message_size_exceeds_batch_size: _false_** — this parameter specifies if a message size exceeding a batch size 
+**check_message_size_exceeds_batch_size: _true_** — this parameter specifies if a message size exceeding a batch size 
 should be checked of not
 
 

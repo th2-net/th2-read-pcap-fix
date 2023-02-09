@@ -30,7 +30,7 @@ public class PcapFileReaderConfiguration {
     private static final long DEFAULT_SLEEP_INTERVAL = 60;
     private static final long DEFAULT_NUMBER_OF_PACKETS_TO_SUCCESSFUL_RESTORE = 10;
     private static final boolean DEFAULT_USE_EVENT_PUBLISHING = true;
-    private static final boolean DEFAULT_USE_MSTORE = false;
+    private static final boolean DEFAULT_USE_MSTORE = true;
     private static final boolean DEFAULT_USE_OFFSET_FROM_CRADLE = true;
     private static final boolean DEFAULT_DISABLE_CRADLE_SAVING = false;
     private static final boolean DEFAULT_DISABLE_CONNECTIVITY_SAVING = false;
@@ -78,7 +78,7 @@ public class PcapFileReaderConfiguration {
     private long eventBatchSize = 1024*1024L; // 1Mb
 
     @JsonProperty("event_batcher_core_pool_size")
-    private int eventBatcherCorePoolSize = 2;
+    private int eventBatcherCorePoolSize = 100;
 
     @JsonProperty("event_batcher_max_flush_time")
     private long eventBatcherMaxFlushTime = 1000L;
@@ -90,7 +90,7 @@ public class PcapFileReaderConfiguration {
     private List<IndividualReaderConfiguration> individualReaderConfigurations;
 
     @JsonProperty("message_batcher_core_pool_size")
-    private int messageBatcherCorePoolSize = 2;
+    private int messageBatcherCorePoolSize = 100;
 
     @JsonProperty("message_batcher_max_flush_time")
     private long messageBatcherMaxFlushTime = 1000L;
@@ -99,7 +99,7 @@ public class PcapFileReaderConfiguration {
     private int bufferedReaderChunkSize = 8192; //default value for BufferedInputStream
 
     @JsonProperty("check_message_batch_sequence_growth")
-    private boolean checkMessageBatchSequenceGrowth = false;
+    private boolean checkMessageBatchSequenceGrowth = true;
 
     @JsonProperty("check_message_batch_timestamp_growth")
     private boolean checkMessageBatchTimestampGrowth = false;
@@ -126,7 +126,7 @@ public class PcapFileReaderConfiguration {
     private long possibleTimeWindowBetweenFiles = 1000;
 
     @JsonProperty("check_message_size_exceeds_batch_size")
-    private boolean checkMessageSizeExceedsBatchSize = false;
+    private boolean checkMessageSizeExceedsBatchSize = true;
 
     public List<IndividualReaderConfiguration> getIndividualReaderConfigurations() {
         return individualReaderConfigurations;
