@@ -20,8 +20,8 @@ All values after `:` are default values.
 **dead_connections_scan_interval: _100000_** — this parameter specifies the number of processed packets after which the 
 scanning of dead connections is run
 
-**connection_death_interval: _10800000_** — this parameter specifies the time (in milliseconds) after which
-the connection is considered dead. PCAP time is used here
+**connection_death_interval: _10800000_** — this parameter specifies the time (in milliseconds) between two packet
+timestamps after which the connection is considered dead
 
 **read_state: _true_** — this parameter specifies if the component reads its state when (re)staring in order to 
 resume the processing
