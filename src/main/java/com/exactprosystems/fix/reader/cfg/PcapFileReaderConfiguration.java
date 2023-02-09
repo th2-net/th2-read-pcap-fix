@@ -33,7 +33,7 @@ public class PcapFileReaderConfiguration {
     private static final boolean DEFAULT_USE_MSTORE = true;
     private static final boolean DEFAULT_USE_OFFSET_FROM_CRADLE = true;
     private static final boolean DEFAULT_DISABLE_CRADLE_SAVING = false;
-    private static final boolean DEFAULT_DISABLE_CONNECTIVITY_SAVING = false;
+    private static final boolean DEFAULT_DISABLE_CONNECTIVITY_MESSAGES = false;
 
     @JsonProperty("use_mstore")
     @JsonPropertyDescription("The flag that is responsible for saving messages to mstore instead of database")
@@ -71,8 +71,8 @@ public class PcapFileReaderConfiguration {
     @JsonProperty("disable_cradle_saving")
     private boolean disableCradleSaving = DEFAULT_DISABLE_CRADLE_SAVING;
 
-    @JsonProperty("disable_connectivity_saving")
-    private boolean disableConnectivitySaving = DEFAULT_DISABLE_CONNECTIVITY_SAVING;
+    @JsonProperty("disable_connectivity_messages")
+    private boolean disableConnectivityMessages = DEFAULT_DISABLE_CONNECTIVITY_MESSAGES;
 
     @JsonProperty("event_batch_size")
     private long eventBatchSize = 1024*1024L; // 1Mb
@@ -219,13 +219,13 @@ public class PcapFileReaderConfiguration {
         this.disableCradleSaving = disableCradleSaving;
     }
 
-    public boolean isDisableConnectivitySaving() {
-        return disableConnectivitySaving;
+    public boolean isDisableConnectivityMessages() {
+        return disableConnectivityMessages;
     }
 
     @SuppressWarnings("unused")
-    public void setDisableConnectivitySaving(boolean disableConnectivitySaving) {
-        this.disableConnectivitySaving = disableConnectivitySaving;
+    public void setDisableConnectivityMessages(boolean disableConnectivityMessages) {
+        this.disableConnectivityMessages = disableConnectivityMessages;
     }
 
     public long getFixConnectionDeathInterval() {

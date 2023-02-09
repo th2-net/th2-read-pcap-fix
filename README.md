@@ -44,7 +44,7 @@ in a stream message stream
 **disable_cradle_saving: _false_** — this parameter specifies if the component will store the messages to 
 [cradle](https://github.com/th2-net/cradleapi)
 
-**disable_connectivity_saving: _false_** — this parameter specifies if the connection event will be stored
+**disable_connectivity_messages: _false_** — this parameter specifies if the connection event will be stored
 
 **event_batch_size: _1048576_** — this parameter specifies the size of an event batch (1MB by default)
 
@@ -56,7 +56,7 @@ event batch
 **use_offset_from_cradle: _true_** — this parameter is used for synchronization of PCAP packet sequences with
 packet sequences from Cradle
 
-**individual_read_configurations** — this parameter will be covered in the next section
+**individual_read_configurations** — this parameter specifies a set of individual configurations for connections
 
 **message_batcher_core_pool_size: _100_** — this parameter specifies the number of events necessary for sending another
 message batch
@@ -123,7 +123,7 @@ dead_connections_scan_interval: 100000
 read_state: false
 write_state: true
 use_timestamp_from_pcap: true
-disable_connectivity_saving: true
+disable_connectivity_messages: true
 use_event_publish: true
 use_mstore: true
 use_offset_from_cradle: false

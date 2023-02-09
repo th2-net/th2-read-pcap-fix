@@ -154,7 +154,7 @@ public abstract class AbstractMstoreSaver extends Saver {
     @Override
     public void saveConnectionEvent(ConnectionEvent event, Pcap packet, boolean isClientStream, boolean saveToDb) {
 
-        if (configuration.isDisableConnectivitySaving() || !saveToDb) {
+        if (configuration.isDisableConnectivityMessages() || !saveToDb) {
             return;
         }
 

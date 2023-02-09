@@ -168,7 +168,7 @@ public abstract class AbstractCradleSaver extends Saver {
     }
 
     public void saveConnectionEvent(ConnectionEvent event, Pcap packet, boolean isClientStream, boolean saveToDb) {
-        if (configuration.isDisableCradleSaving() || configuration.isDisableConnectivitySaving() || !saveToDb) {
+        if (configuration.isDisableCradleSaving() || configuration.isDisableConnectivityMessages() || !saveToDb) {
             return;
         }
 
