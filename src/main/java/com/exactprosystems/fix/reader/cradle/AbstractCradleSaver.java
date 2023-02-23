@@ -28,7 +28,6 @@ import com.exactpro.th2.common.grpc.Direction;
 import com.exactpro.th2.common.grpc.MessageID;
 import com.exactpro.th2.common.grpc.RawMessage;
 import com.exactpro.th2.common.grpc.RawMessageMetadata;
-import com.exactpro.th2.store.common.utils.ProtoUtil;
 import com.exactprosystems.fix.reader.connectionevents.ConnectionEvent;
 import com.exactprosystems.fix.reader.connectionevents.TcpConnectionEvent;
 import com.exactprosystems.fix.reader.eventsender.FileEventType;
@@ -57,6 +56,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import static com.exactpro.th2.common.util.StorageUtils.toCradleDirection;
+import static com.exactpro.th2.common.util.StorageUtils.toInstant;
 import static org.apache.commons.lang3.builder.ToStringStyle.NO_CLASS_NAME_STYLE;
 
 public abstract class AbstractCradleSaver extends Saver {
@@ -253,8 +254,8 @@ public abstract class AbstractCradleSaver extends Saver {
         MessageToStoreBuilder builder = new MessageToStoreBuilder()
                 .streamName(messageID.getConnectionId().getSessionAlias())
                 .content(protoRawMessage.toByteArray())
-                .timestamp(ProtoUtil.toInstant(metadata.getTimestamp()))
-                .direction(ProtoUtil.toCradleDirection(messageID.getDirection()))
+                .timestamp(toInstant(metadata.getTimestamp()))
+                .direction(toCradleDirection(messageID.getDirection()))
                 .index(messageID.getSequence());
 
         for (Map.Entry<String, String> entry : properties.entrySet()) {

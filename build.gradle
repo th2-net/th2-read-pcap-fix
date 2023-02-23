@@ -66,16 +66,14 @@ dependencies {
     api platform('com.exactpro.th2:bom:4.2.0')
 
     implementation 'io.netty:netty-buffer'
-    implementation group: 'com.github.os72', name: 'protoc-jar-maven-plugin', version: '3.11.4'
-    implementation 'com.exactpro.mina:apache-mina-core:2.0.9.1'
-    implementation 'com.exactpro.sf:sailfish-common:3.3.54'
+    implementation 'commons-collections:commons-collections:3.2.2'
+
     implementation 'org.tukaani:xz:1.8'
     implementation 'io.prometheus:simpleclient:0.9.0'
 
     implementation 'org.apache.commons:commons-compress:1.21'
 
     implementation 'com.exactpro.th2:common:3.44.1'
-    implementation 'com.exactpro.th2:store-common:3.2.0'
     implementation 'org.codehaus.plexus:plexus-utils:3.0.16'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3'
