@@ -19,6 +19,8 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public class IpMask {
     private static final String WILDCARD_NUMBER = "255";
     private static final byte MASK_SHIFT = 8;
@@ -35,6 +37,7 @@ public class IpMask {
         this.expectedIp = mask >> maskSize;
     }
 
+    @JsonCreator
     public static IpMask createFromString(String ipMask) {
         String[] parts = StringUtils.split(ipMask, '.');
         if (parts.length != 4) {

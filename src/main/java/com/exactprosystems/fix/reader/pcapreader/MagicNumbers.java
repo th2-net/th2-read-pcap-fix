@@ -21,13 +21,18 @@ import java.util.Arrays;
 
 public final class MagicNumbers {
     public static PcapTimestampResolution identifyPcapTimestampResolution(byte[] magicNumber) {
-        if (Arrays.equals(new byte[]{(byte) 0xA1, (byte) 0xB2, (byte) 0xC3, (byte) 0xD4}, magicNumber)
-                || Arrays.equals(new byte[]{(byte) 0xD4, (byte) 0xC3, (byte) 0xB2, (byte) 0xA1}, magicNumber)) {
+        if (magicNumberEquals(new byte[]{(byte) 0xA1, (byte) 0xB2, (byte) 0xC3, (byte) 0xD4}, magicNumber)
+                || magicNumberEquals(new byte[]{(byte) 0xD4, (byte) 0xC3, (byte) 0xB2, (byte) 0xA1}, magicNumber)) {
             return PcapTimestampResolution.MICROSECOND_RESOLUTION;
-        } else if (Arrays.equals(new byte[]{(byte) 0xA1, (byte) 0xB2, (byte) 0x3C, (byte) 0x4D}, magicNumber)
-                || Arrays.equals(new byte[]{(byte) 0x4D, (byte) 0x3C, (byte) 0xB2, (byte) 0xA1}, magicNumber)) {
+        }
+        if (magicNumberEquals(new byte[]{(byte) 0xA1, (byte) 0xB2, (byte) 0x3C, (byte) 0x4D}, magicNumber)
+                || magicNumberEquals(new byte[]{(byte) 0x4D, (byte) 0x3C, (byte) 0xB2, (byte) 0xA1}, magicNumber)) {
             return PcapTimestampResolution.NANOSECOND_RESOLUTION;
         }
         return PcapTimestampResolution.UNDEFINED;
+    }
+
+    private static boolean magicNumberEquals(byte[] expected, byte[] actualHeader) {
+        return Arrays.equals(expected, 0, 4, actualHeader, 0, 4);
     }
 }
