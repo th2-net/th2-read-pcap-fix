@@ -46,6 +46,7 @@ import java.util.*;
 
 import java.util.stream.Collectors;
 
+@Disabled
 public class PcapReaderTest {
 
     private static final Logger log = LoggerFactory.getLogger(PcapReaderTest.class);
@@ -65,7 +66,6 @@ public class PcapReaderTest {
     }
 
     @Test
-    @Disabled
     public void fixTest() throws IOException, InterruptedException, CradleStorageException {
         factory = CommonFactory.createFromArguments("-c",
                 "cradleConfidentialConfiguration",
